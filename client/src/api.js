@@ -42,11 +42,10 @@ export const VoteAPI = {
 };
 
 export const AdminAPI = {
-  status: () => api.get('/admin/settings'),
   open: () => api.post('/admin/open'),
   close: () => api.post('/admin/close'),
   end: () => api.post('/admin/end'),
-  schedule: (payload) => api.post('/admin/schedule', payload)
+  schedule: (data) => api.post('/admin/schedule', data),
+  status: () => api.get('/admin/settings'),
+  clearScheduleMessage: () => api.delete('/admin/schedule-message')
 };
-
-

@@ -65,7 +65,7 @@ export default function StudentDashboard() {
       alert(`✅ You have voted for ${contestant.fullName}. Thank you for voting!`);
       setVoted(v => ({ ...v, [contestant.position]: contestant._id }));
     } catch (err) {
-      alert(err?.response?.data?.message || 'Unable to vote.');
+      alert(err?.response?.data?.message || 'Unable to vote then.');
     }
   };
 
@@ -73,6 +73,11 @@ export default function StudentDashboard() {
 
   return (
     <div className="container full-viewport">
+      {!votingOpen && settings?.scheduleMessage && (
+        <div className="notice">
+          {settings.scheduleMessage}
+        </div>
+      )}
       {scheduledMsg && <div className="notice">{scheduledMsg}</div>}
 
       {Object.keys(byPosition).map(pos => (

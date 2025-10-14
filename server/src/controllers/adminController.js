@@ -81,16 +81,30 @@ async function endVoting(req, res) {
 
 async function scheduleVoting(req, res) {
   try {
-    const { startAt, endAt } = req.body; // ISO strings
+    const { startAt, endAt, scheduleMessage } = req.body; // ISO strings
     const s = await getOrCreateSetting();
     s.scheduledStartAt = startAt ? dayjs(startAt).toDate() : null;
     s.scheduledEndAt = endAt ? dayjs(endAt).toDate() : null;
+    s.scheduleMessage = scheduleMessage || null;
     await s.save();
-    emitLiveUpdate('voting_schedule', { startAt: s.scheduledStartAt, endAt: s.scheduledEndAt });
-    res.json({ startAt: s.scheduledStartAt, endAt: s.scheduledEndAt });
+    emitLiveUpdate('voting_schedule', { startAt: s.scheduledStartAt, endAt: s.scheduledEndAt, scheduleMessage: s.scheduleMessage });
+    res.json({ startAt: s.scheduledStartAt, endAt: s.scheduledEndAt, scheduleMessage: s.scheduleMessage });
   } catch (error) {
     console.error('Error scheduling voting:', error);
     res.status(500).json({ message: 'Failed to schedule voting due to a server error.' });
+  }
+}
+
+async function clearScheduleMessage(req, res) {
+  try {
+    const s = await getOrCreateSetting();
+    s.scheduleMessage = null;
+    await s.save();
+    emitLiveUpdate('voting_schedule', { startAt: s.scheduledStartAt, endAt: s.scheduledEndAt, scheduleMessage: null });
+    res.json({ message: 'Schedule message cleared' });
+  } catch (error) {
+    console.error('Error clearing schedule message:', error);
+    res.status(500).json({ message: 'Failed to clear schedule message due to a server error.' });
   }
 }
 
@@ -104,7 +118,7 @@ async function getSettings(req, res) {
   }
 }
 
-module.exports = { openVoting, closeVoting, endVoting, scheduleVoting, getSettings };
+module.exports = { openVoting, closeVoting, endVoting, scheduleVoting, getSettings, clearScheduleMessage };
 
 
 

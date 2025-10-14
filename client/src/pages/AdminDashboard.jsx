@@ -12,6 +12,7 @@ export default function AdminDashboard() {
   const [editForm, setEditForm] = useState({ fullName: '', course: '', position: '', manifesto: '', image: null });
   const API_BASE_ORIGIN = import.meta.env.VITE_API_BASE_ORIGIN || 'http://localhost:5000';
   const [viewMode, setViewMode] = useState('leaders'); // 'leaders' | 'detailed'
+  const [scheduleMessage, setScheduleMessage] = useState('');
 
   useEffect(() => {
     AdminAPI.status().then(r => setSettings(r.data));
@@ -72,6 +73,28 @@ export default function AdminDashboard() {
     alert('Contestant deleted');
   };
 
+  const saveScheduleMessage = async () => {
+    if (!scheduleMessage.trim()) return;
+    try {
+      await AdminAPI.schedule({ scheduleMessage: scheduleMessage.trim() });
+      setSettings(prev => ({ ...prev, scheduleMessage: scheduleMessage.trim() }));
+      setScheduleMessage('');
+      alert('Schedule message saved');
+    } catch (err) {
+      alert('Failed to save message');
+    }
+  };
+
+  const clearMessage = async () => {
+    try {
+      await AdminAPI.clearScheduleMessage();
+      setSettings(prev => ({ ...prev, scheduleMessage: null }));
+      alert('Schedule message cleared');
+    } catch (err) {
+      alert('Failed to clear message');
+    }
+  };
+
   const groupedResults = live.reduce((acc, r) => {
     (acc[r.position] ||= []).push(r);
     return acc;
@@ -82,65 +105,79 @@ export default function AdminDashboard() {
 
   return (
     <div className="container">
-      <div className="grid">
-        <div className="card">
-          <h3>Voting Controls</h3>
-          <p>Status: <b>{settings?.votingStatus}</b></p>
-          <div className="row">
-            <button className="btn-success" onClick={() => AdminAPI.open()}>Open Voting</button>
-            <button className="btn-warning" onClick={() => AdminAPI.close()}>Close Voting</button>
-            <button className="btn-danger" onClick={() => AdminAPI.end()}>End Voting</button>
-          </div>
-          <div className="row">
-            <label>Schedule Start: <input type="datetime-local" onChange={e => AdminAPI.schedule({ startAt: new Date(e.target.value).toISOString() })} /></label>
-            <label>Schedule End: <input type="datetime-local" onChange={e => AdminAPI.schedule({ endAt: new Date(e.target.value).toISOString() })} /></label>
-          </div>
+      <div className="section">
+        <h3>Voting Controls</h3>
+        <p>Status: <b>{settings?.votingStatus}</b></p>
+        <div className="row">
+          <button className="btn-success" onClick={() => AdminAPI.open()}>Open Voting</button>
+          <button className="btn-warning" onClick={() => AdminAPI.close()}>Close Voting</button>
+          <button className="btn-danger" onClick={() => AdminAPI.end()}>End Voting</button>
         </div>
-
-        <div className="card">
-          <h3>Upload Contestant</h3>
-          <form onSubmit={upload} className="form">
-            <input name="fullName" placeholder="Full Name" onChange={upd} required />
-            <input name="course" placeholder="Course" onChange={upd} required />
-            <input name="position" placeholder="Position" onChange={upd} required />
-            <textarea name="manifesto" placeholder="Manifesto" onChange={upd} required />
-            <input name="image" type="file" accept="image/*" onChange={upd} required />
-            <button type="submit">Upload Contestants</button>
-          </form>
+        <div className="row">
+          <label>Schedule Start: <input type="datetime-local" onChange={e => AdminAPI.schedule({ startAt: new Date(e.target.value).toISOString() })} /></label>
+          <label>Schedule End: <input type="datetime-local" onChange={e => AdminAPI.schedule({ endAt: new Date(e.target.value).toISOString() })} /></label>
         </div>
-
-        <div className="card">
-          <h3>Manage Contestants</h3>
-          <div className="cards">
-            {contestants.map(c => (
-              <div key={c._id} className="card">
-                {editingId === c._id ? (
-                  <form onSubmit={saveEdit} className="form">
-                    <input value={editForm.fullName} onChange={e => setEditForm(f => ({ ...f, fullName: e.target.value }))} placeholder="Full Name" required />
-                    <input value={editForm.course} onChange={e => setEditForm(f => ({ ...f, course: e.target.value }))} placeholder="Course" required />
-                    <input value={editForm.position} onChange={e => setEditForm(f => ({ ...f, position: e.target.value }))} placeholder="Position" required />
-                    <textarea value={editForm.manifesto} onChange={e => setEditForm(f => ({ ...f, manifesto: e.target.value }))} placeholder="Manifesto" required />
-                    <input type="file" accept="image/*" onChange={e => setEditForm(f => ({ ...f, image: e.target.files?.[0] || null }))} />
-                    <div className="row">
-                      <button type="submit" className="btn-success">Save</button>
-                      <button type="button" className="btn-secondary" onClick={cancelEdit}>Cancel</button>
-                    </div>
-                  </form>
-                ) : (
-                  <>
-                    <img src={`${API_BASE_ORIGIN}${c.imageUrl}`} alt={c.fullName} style={{ width: '100%', height: 140, objectFit: 'cover' }} />
-                    <h4>{c.fullName}</h4>
-                    <p>{c.course}</p>
-                    <p><b>{c.position}</b></p>
-                    <div className="row">
-                      <button className="btn-secondary" onClick={() => startEdit(c)}>Edit</button>
-                      <button className="btn-danger" onClick={() => remove(c._id)}>Delete</button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
+        <div className="row">
+          <input 
+            type="text" 
+            placeholder="Schedule message for students" 
+            value={scheduleMessage} 
+            onChange={e => setScheduleMessage(e.target.value)}
+          />
+          <button onClick={saveScheduleMessage}>Save Message</button>
+          {settings?.scheduleMessage && (
+            <button className="btn-danger" onClick={clearMessage}>Clear Message</button>
+          )}
+        </div>
+        {settings?.scheduleMessage && (
+          <div className="notice" style={{ marginTop: '16px' }}>
+            Current message: "{settings.scheduleMessage}"
           </div>
+        )}
+      </div>
+
+      <div className="section">
+        <form onSubmit={upload} className="form">
+          <input name="fullName" placeholder="Full Name" onChange={upd} required />
+          <input name="course" placeholder="Course" onChange={upd} required />
+          <input name="position" placeholder="Position" onChange={upd} required />
+          <textarea name="manifesto" placeholder="Manifesto" onChange={upd} required />
+          <input name="image" type="file" accept="image/*" onChange={upd} required />
+          <button type="submit">Upload Contestants</button>
+        </form>
+      </div>
+
+      <div className="section">
+        <h3>Manage Contestants</h3>
+        <div className="cards">
+          {contestants.map(c => (
+            <div key={c._id} className="card">
+              {editingId === c._id ? (
+                <form onSubmit={saveEdit} className="form">
+                  <input value={editForm.fullName} onChange={e => setEditForm(f => ({ ...f, fullName: e.target.value }))} placeholder="Full Name" required />
+                  <input value={editForm.course} onChange={e => setEditForm(f => ({ ...f, course: e.target.value }))} placeholder="Course" required />
+                  <input value={editForm.position} onChange={e => setEditForm(f => ({ ...f, position: e.target.value }))} placeholder="Position" required />
+                  <textarea value={editForm.manifesto} onChange={e => setEditForm(f => ({ ...f, manifesto: e.target.value }))} placeholder="Manifesto" required />
+                  <input type="file" accept="image/*" onChange={e => setEditForm(f => ({ ...f, image: e.target.files?.[0] || null }))} />
+                  <div className="row">
+                    <button type="submit" className="btn-success">Save</button>
+                    <button type="button" className="btn-secondary" onClick={cancelEdit}>Cancel</button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  <img src={`${API_BASE_ORIGIN}${c.imageUrl}`} alt={c.fullName} style={{ width: '100%', height: 140, objectFit: 'cover' }} />
+                  <h4>{c.fullName}</h4>
+                  <p>{c.course}</p>
+                  <p><b>{c.position}</b></p>
+                  <div className="row">
+                    <button className="btn-secondary" onClick={() => startEdit(c)}>Edit</button>
+                    <button className="btn-danger" onClick={() => remove(c._id)}>Delete</button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
