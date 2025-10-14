@@ -41,7 +41,7 @@ export default function StudentRegister() {
         <input disabled={loading} name="firstName" placeholder="First Name" value={form.firstName} onChange={onChange} required />
         <input disabled={loading} name="lastName" placeholder="Last Name" value={form.lastName} onChange={onChange} required />
         <input disabled={loading} name="course" placeholder="Course" value={form.course} onChange={onChange} required />
-        <input disabled={loading} name="admissionNumber" type="number" placeholder="Admission Number (1000-2500)" value={form.admissionNumber} onChange={onChange} required />
+        <input disabled={loading} name="admissionNumber" type="number" placeholder="Admission Number (500-9999)" value={form.admissionNumber} onChange={onChange} required />
         <input disabled={loading} name="password" type="password" placeholder="Password" value={form.password} onChange={onChange} required />
         <input disabled={loading} name="confirmPassword" type="password" placeholder="Confirm Password" value={form.confirmPassword} onChange={onChange} required />
         <label className="agree">

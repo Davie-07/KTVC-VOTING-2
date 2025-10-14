@@ -10,8 +10,8 @@ async function studentRegister(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
   const { firstName, lastName, course, admissionNumber, password } = req.body;
-  if (admissionNumber < admissionMin || admissionNumber > admissionMax) {
-    return res.status(400).json({ message: `Admission number must be between ${admissionMin} and ${admissionMax}.` });
+  if (admissionNumber < 500 || admissionNumber > 9999) {
+    return res.status(400).json({ message: 'Admission number must be between 500-9999.' });
   }
   const exists = await Student.findOne({ admissionNumber });
   if (exists) {

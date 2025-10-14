@@ -1,8 +1,8 @@
 module.exports = {
   systemTitle: 'Kandara College Voting System',
   collegeName: 'Kandara College',
-  admissionMin: 1000,
-  admissionMax: 2500,
+  admissionMin: 500,
+  admissionMax: 9999,
   positions: [
     'President',
     'Vice President',

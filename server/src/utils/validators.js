@@ -5,13 +5,13 @@ const studentRegisterValidation = [
   body('firstName').trim().notEmpty(),
   body('lastName').trim().notEmpty(),
   body('course').trim().notEmpty(),
-  body('admissionNumber').isInt({ min: admissionMin, max: admissionMax }),
+  body('admissionNumber').isInt({ min: 500, max: 9999 }).withMessage('Admission number must be between 500-9999'),
   body('password').isLength({ min: 6 }),
   body('confirmPassword').custom((value, { req }) => value === req.body.password)
 ];
 
 const studentLoginValidation = [
-  body('admissionNumber').isInt({ min: admissionMin, max: admissionMax }),
+  body('admissionNumber').isInt({ min: 500, max: 9999 }).withMessage('Admission number must be between 500-9999'),
   body('password').isLength({ min: 6 })
 ];
 
