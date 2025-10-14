@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ContestantAPI, VoteAPI, AdminAPI } from '../api';
 import { createSocket } from '../socket';
+import ProgressBar from '../components/ProgressBar';
 
 export default function StudentDashboard() {
   const [contestants, setContestants] = useState([]);
@@ -107,28 +108,47 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        {viewMode === 'leaders' ? (
-          <ul>
+{viewMode === 'leaders' ? (
+          <div className="leaders-summary">
             {Object.keys(leadingByPosition).map(pos => {
               const lr = leadingByPosition[pos];
               if (!lr) return null;
+              const maxVotes = Math.max(...Object.values(groupedResults).flat().map(r => r.total));
               return (
-                <li key={pos}>{pos} — {lr.name} ({lr.course}): {lr.total}</li>
+                <div key={pos} className="leader-card">
+                  <div className="leader-info">
+                    <h4>{pos}</h4>
+                    <p><strong>{lr.name}</strong> ({lr.course})</p>
+                  </div>
+                  <ProgressBar 
+                    value={lr.total} 
+                    max={maxVotes} 
+                    label="Leading with" 
+                    className="leader-progress"
+                  />
+                </div>
               );
             })}
-          </ul>
+          </div>
         ) : (
-          <div>
-            {Object.keys(groupedResults).map(pos => (
-              <div key={pos} className="card" style={{ textAlign: 'left' }}>
-                <h4 style={{ marginTop: 0 }}>{pos}</h4>
-                <ul>
-                  {groupedResults[pos].map(r => (
-                    <li key={r.contestantId}>{r.name} ({r.course}) — {r.total}</li>
+          <div className="detailed-results">
+            {Object.keys(groupedResults).map(pos => {
+              const positionResults = groupedResults[pos];
+              const maxInPosition = Math.max(...positionResults.map(r => r.total));
+              return (
+                <div key={pos} className="card position-results">
+                  <h4 style={{ marginTop: 0, marginBottom: 'var(--space-4)' }}>{pos}</h4>
+                  {positionResults.map(r => (
+                    <ProgressBar
+                      key={r.contestantId}
+                      value={r.total}
+                      max={maxInPosition}
+                      label={`${r.name} (${r.course})`}
+                    />
                   ))}
-                </ul>
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

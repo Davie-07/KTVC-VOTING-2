@@ -16,16 +16,15 @@ export default function AdminLogin() {
     e.preventDefault();
     try {
       setLoading(true);
-      const delay = (ms) => new Promise(r => setTimeout(r, ms));
-      const loginPromise = AuthAPI.adminLogin({ systemId, password });
-      const [{ data }] = await Promise.all([loginPromise, delay(3500)]);
+      const { data } = await AuthAPI.adminLogin({ systemId, password });
       setToken(data.token);
       setRole('admin');
       setToast({ type: 'success', text: 'Login successful' });
       navigate('/admin/dashboard');
     } catch (err) {
-      setMsg('Invalid credentials');
-      setToast({ type: 'error', text: 'Invalid credentials' });
+      const text = err?.response?.data?.message || 'Login failed. Please check your details and try again.';
+      setMsg(text);
+      setToast({ type: 'error', text });
     } finally {
       setLoading(false);
     }

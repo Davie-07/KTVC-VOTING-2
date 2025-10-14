@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AdminAPI, ContestantAPI, VoteAPI } from '../api';
 import { createSocket } from '../socket';
+import ProgressBar from '../components/ProgressBar';
 
 export default function AdminDashboard() {
   const [settings, setSettings] = useState(null);
@@ -86,9 +87,9 @@ export default function AdminDashboard() {
           <h3>Voting Controls</h3>
           <p>Status: <b>{settings?.votingStatus}</b></p>
           <div className="row">
-            <button onClick={() => AdminAPI.open()}>Open Voting</button>
-            <button onClick={() => AdminAPI.close()}>Close Voting</button>
-            <button onClick={() => AdminAPI.end()}>End Voting</button>
+            <button className="btn-success" onClick={() => AdminAPI.open()}>Open Voting</button>
+            <button className="btn-warning" onClick={() => AdminAPI.close()}>Close Voting</button>
+            <button className="btn-danger" onClick={() => AdminAPI.end()}>End Voting</button>
           </div>
           <div className="row">
             <label>Schedule Start: <input type="datetime-local" onChange={e => AdminAPI.schedule({ startAt: new Date(e.target.value).toISOString() })} /></label>
@@ -121,8 +122,8 @@ export default function AdminDashboard() {
                     <textarea value={editForm.manifesto} onChange={e => setEditForm(f => ({ ...f, manifesto: e.target.value }))} placeholder="Manifesto" required />
                     <input type="file" accept="image/*" onChange={e => setEditForm(f => ({ ...f, image: e.target.files?.[0] || null }))} />
                     <div className="row">
-                      <button type="submit">Save</button>
-                      <button type="button" onClick={cancelEdit}>Cancel</button>
+                      <button type="submit" className="btn-success">Save</button>
+                      <button type="button" className="btn-secondary" onClick={cancelEdit}>Cancel</button>
                     </div>
                   </form>
                 ) : (
@@ -132,8 +133,8 @@ export default function AdminDashboard() {
                     <p>{c.course}</p>
                     <p><b>{c.position}</b></p>
                     <div className="row">
-                      <button onClick={() => startEdit(c)}>Edit</button>
-                      <button onClick={() => remove(c._id)}>Delete</button>
+                      <button className="btn-secondary" onClick={() => startEdit(c)}>Edit</button>
+                      <button className="btn-danger" onClick={() => remove(c._id)}>Delete</button>
                     </div>
                   </>
                 )}
@@ -152,28 +153,47 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {viewMode === 'leaders' ? (
-          <ul>
+{viewMode === 'leaders' ? (
+          <div className="leaders-summary">
             {Object.keys(leadingByPosition).map(pos => {
               const lr = leadingByPosition[pos];
               if (!lr) return null;
+              const maxVotes = Math.max(...Object.values(groupedResults).flat().map(r => r.total));
               return (
-                <li key={pos}>{pos} — {lr.name} ({lr.course}): {lr.total}</li>
+                <div key={pos} className="leader-card">
+                  <div className="leader-info">
+                    <h4>{pos}</h4>
+                    <p><strong>{lr.name}</strong> ({lr.course})</p>
+                  </div>
+                  <ProgressBar 
+                    value={lr.total} 
+                    max={maxVotes} 
+                    label="Leading with" 
+                    className="leader-progress"
+                  />
+                </div>
               );
             })}
-          </ul>
+          </div>
         ) : (
-          <div>
-            {Object.keys(groupedResults).map(pos => (
-              <div key={pos} className="card" style={{ textAlign: 'left' }}>
-                <h4 style={{ marginTop: 0 }}>{pos}</h4>
-                <ul>
-                  {groupedResults[pos].map(r => (
-                    <li key={r.contestantId}>{r.name} ({r.course}) — {r.total}</li>
+          <div className="detailed-results">
+            {Object.keys(groupedResults).map(pos => {
+              const positionResults = groupedResults[pos];
+              const maxInPosition = Math.max(...positionResults.map(r => r.total));
+              return (
+                <div key={pos} className="card position-results">
+                  <h4 style={{ marginTop: 0, marginBottom: 'var(--space-4)' }}>{pos}</h4>
+                  {positionResults.map(r => (
+                    <ProgressBar
+                      key={r.contestantId}
+                      value={r.total}
+                      max={maxInPosition}
+                      label={`${r.name} (${r.course})`}
+                    />
                   ))}
-                </ul>
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
