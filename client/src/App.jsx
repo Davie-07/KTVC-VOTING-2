@@ -11,7 +11,7 @@ export default function App() {
     <BrowserRouter>
       <nav className="nav">
         <Link to="/" className="header">
-          <img src="/KTVC-LOGO.png" alt="Gapsite College" className="logo-sm" />
+          <img src="/KTVC-LOGO.png" alt="Kandara College" className="logo-sm" />
           <span className="title-orange">Kandara College Voting System</span>
         </Link>
       </nav>

@@ -47,7 +47,7 @@ async function getLiveResults(req, res) {
     { $group: { _id: { contestantId: '$contestantId', position: '$position' }, total: { $sum: 1 } } },
     { $lookup: { from: 'contestants', localField: '_id.contestantId', foreignField: '_id', as: 'contestant' } },
     { $unwind: '$contestant' },
-    { $project: { _id: 0, position: '$_id.position', contestantId: '$_id.contestantId', total: 1, name: '$contestant.fullName' } },
+    { $project: { _id: 0, position: '$_id.position', contestantId: '$_id.contestantId', total: 1, name: '$contestant.fullName', course: '$contestant.course' } },
     { $sort: { position: 1, total: -1 } }
   ];
   const results = await Vote.aggregate(pipeline);

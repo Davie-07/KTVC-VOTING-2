@@ -30,7 +30,9 @@ export const AuthAPI = {
 
 export const ContestantAPI = {
   list: () => api.get('/contestants'),
-  create: (formData) => api.post('/contestants', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+  create: (formData) => api.post('/contestants', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  update: (id, formData) => api.put(`/contestants/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  remove: (id) => api.delete(`/contestants/${id}`)
 };
 
 export const VoteAPI = {

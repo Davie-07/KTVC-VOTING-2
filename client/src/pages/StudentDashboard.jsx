@@ -8,6 +8,8 @@ export default function StudentDashboard() {
   const [settings, setSettings] = useState(null);
   const [voted, setVoted] = useState({}); // position -> contestantId
   const votingOpen = settings?.votingStatus === 'open';
+  const API_BASE_ORIGIN = import.meta.env.VITE_API_BASE_ORIGIN || 'http://localhost:5000';
+  const [viewMode, setViewMode] = useState('leaders'); // 'leaders' | 'detailed'
 
   useEffect(() => {
     ContestantAPI.list().then(r => setContestants(r.data));
@@ -38,13 +40,22 @@ export default function StudentDashboard() {
     return map;
   }, [contestants]);
 
-  const leadingByPosition = useMemo(() => {
+  const groupedResults = useMemo(() => {
     const map = {};
     for (const r of results) {
-      if (!map[r.position]) map[r.position] = r;
+      if (!map[r.position]) map[r.position] = [];
+      map[r.position].push(r);
     }
     return map;
   }, [results]);
+
+  const leadingByPosition = useMemo(() => {
+    const leaders = {};
+    for (const pos of Object.keys(groupedResults)) {
+      leaders[pos] = groupedResults[pos][0];
+    }
+    return leaders;
+  }, [groupedResults]);
 
   const cast = async (contestant) => {
     if (!confirm(`You are voting for ${contestant.fullName} as ${contestant.position}. Confirm your vote?`)) return;
@@ -61,7 +72,6 @@ export default function StudentDashboard() {
 
   return (
     <div className="container full-viewport">
-      <h2><img src="/KTVC-LOGO.png" alt="KTVC Logo" className="logo-sm" /> <span className="title-orange">Kandara College</span> — Student Dashboard</h2>
       {scheduledMsg && <div className="notice">{scheduledMsg}</div>}
 
       {Object.keys(byPosition).map(pos => (
@@ -74,7 +84,7 @@ export default function StudentDashboard() {
               const leader = leadingByPosition[pos]?.contestantId === c._id;
               return (
                 <div key={c._id} className="card">
-                  <img src={c.imageUrl} alt={c.fullName} style={{ width: '100%', height: 160, objectFit: 'cover' }} />
+                  <img src={`${API_BASE_ORIGIN}${c.imageUrl}`} alt={c.fullName} style={{ width: '100%', height: 160, objectFit: 'cover' }} />
                   <h4>{c.fullName}</h4>
                   <p>{c.course}</p>
                   <p><b>{c.position}</b></p>
@@ -89,12 +99,38 @@ export default function StudentDashboard() {
       ))}
 
       <div className="section">
-        <h3>Live Results</h3>
-        <ul>
-          {results.map(r => (
-            <li key={r.contestantId}>{r.position} — {r.name}: {r.total}</li>
-          ))}
-        </ul>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <h3 style={{ margin: 0 }}>Live Votes</h3>
+          <div className="row">
+            <button onClick={() => setViewMode('leaders')} disabled={viewMode === 'leaders'}>Leading Summary</button>
+            <button onClick={() => setViewMode('detailed')} disabled={viewMode === 'detailed'}>Detailed View</button>
+          </div>
+        </div>
+
+        {viewMode === 'leaders' ? (
+          <ul>
+            {Object.keys(leadingByPosition).map(pos => {
+              const lr = leadingByPosition[pos];
+              if (!lr) return null;
+              return (
+                <li key={pos}>{pos} — {lr.name} ({lr.course}): {lr.total}</li>
+              );
+            })}
+          </ul>
+        ) : (
+          <div>
+            {Object.keys(groupedResults).map(pos => (
+              <div key={pos} className="card" style={{ textAlign: 'left' }}>
+                <h4 style={{ marginTop: 0 }}>{pos}</h4>
+                <ul>
+                  {groupedResults[pos].map(r => (
+                    <li key={r.contestantId}>{r.name} ({r.course}) — {r.total}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

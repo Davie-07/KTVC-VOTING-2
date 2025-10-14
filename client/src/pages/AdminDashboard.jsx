@@ -6,10 +6,16 @@ export default function AdminDashboard() {
   const [settings, setSettings] = useState(null);
   const [live, setLive] = useState([]);
   const [form, setForm] = useState({ fullName: '', course: '', position: '', manifesto: '', image: null });
+  const [contestants, setContestants] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({ fullName: '', course: '', position: '', manifesto: '', image: null });
+  const API_BASE_ORIGIN = import.meta.env.VITE_API_BASE_ORIGIN || 'http://localhost:5000';
+  const [viewMode, setViewMode] = useState('leaders'); // 'leaders' | 'detailed'
 
   useEffect(() => {
     AdminAPI.status().then(r => setSettings(r.data));
     VoteAPI.live().then(r => setLive(r.data));
+    ContestantAPI.list().then(r => setContestants(r.data));
   }, []);
 
   useEffect(() => {
@@ -31,11 +37,50 @@ export default function AdminDashboard() {
     fd.append('image', form.image);
     await ContestantAPI.create(fd);
     alert('Contestant uploaded');
+    setForm({ fullName: '', course: '', position: '', manifesto: '', image: null });
+    const { data } = await ContestantAPI.list();
+    setContestants(data);
   };
+
+  const startEdit = (c) => {
+    setEditingId(c._id);
+    setEditForm({ fullName: c.fullName, course: c.course, position: c.position, manifesto: c.manifesto, image: null });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditForm({ fullName: '', course: '', position: '', manifesto: '', image: null });
+  };
+
+  const saveEdit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData();
+    for (const k of ['fullName','course','position','manifesto']) if (editForm[k] !== undefined) fd.append(k, editForm[k]);
+    if (editForm.image) fd.append('image', editForm.image);
+    await ContestantAPI.update(editingId, fd);
+    cancelEdit();
+    const { data } = await ContestantAPI.list();
+    setContestants(data);
+    alert('Contestant updated');
+  };
+
+  const remove = async (id) => {
+    if (!confirm('Delete this contestant? This cannot be undone.')) return;
+    await ContestantAPI.remove(id);
+    setContestants(prev => prev.filter(x => x._id !== id));
+    alert('Contestant deleted');
+  };
+
+  const groupedResults = live.reduce((acc, r) => {
+    (acc[r.position] ||= []).push(r);
+    return acc;
+  }, {});
+  const leadingByPosition = Object.fromEntries(
+    Object.entries(groupedResults).map(([pos, arr]) => [pos, arr[0]])
+  );
 
   return (
     <div className="container">
-      <h2><img src="/KTVC-LOGO.png" alt="KTVC Logo" className="logo-sm" /> <span className="title-orange">Kandara College</span> — Admin Dashboard</h2>
       <div className="grid">
         <div className="card">
           <h3>Voting Controls</h3>
@@ -62,13 +107,75 @@ export default function AdminDashboard() {
             <button type="submit">Upload Contestants</button>
           </form>
         </div>
+
+        <div className="card">
+          <h3>Manage Contestants</h3>
+          <div className="cards">
+            {contestants.map(c => (
+              <div key={c._id} className="card">
+                {editingId === c._id ? (
+                  <form onSubmit={saveEdit} className="form">
+                    <input value={editForm.fullName} onChange={e => setEditForm(f => ({ ...f, fullName: e.target.value }))} placeholder="Full Name" required />
+                    <input value={editForm.course} onChange={e => setEditForm(f => ({ ...f, course: e.target.value }))} placeholder="Course" required />
+                    <input value={editForm.position} onChange={e => setEditForm(f => ({ ...f, position: e.target.value }))} placeholder="Position" required />
+                    <textarea value={editForm.manifesto} onChange={e => setEditForm(f => ({ ...f, manifesto: e.target.value }))} placeholder="Manifesto" required />
+                    <input type="file" accept="image/*" onChange={e => setEditForm(f => ({ ...f, image: e.target.files?.[0] || null }))} />
+                    <div className="row">
+                      <button type="submit">Save</button>
+                      <button type="button" onClick={cancelEdit}>Cancel</button>
+                    </div>
+                  </form>
+                ) : (
+                  <>
+                    <img src={`${API_BASE_ORIGIN}${c.imageUrl}`} alt={c.fullName} style={{ width: '100%', height: 140, objectFit: 'cover' }} />
+                    <h4>{c.fullName}</h4>
+                    <p>{c.course}</p>
+                    <p><b>{c.position}</b></p>
+                    <div className="row">
+                      <button onClick={() => startEdit(c)}>Edit</button>
+                      <button onClick={() => remove(c._id)}>Delete</button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="section">
-        <h3>Live Votes</h3>
-        <ul>
-          {live.map(r => <li key={r.contestantId}>{r.position} — {r.name}: {r.total}</li>)}
-        </ul>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <h3 style={{ margin: 0 }}>Live Votes</h3>
+          <div className="row">
+            <button onClick={() => setViewMode('leaders')} disabled={viewMode === 'leaders'}>Leading Summary</button>
+            <button onClick={() => setViewMode('detailed')} disabled={viewMode === 'detailed'}>Detailed View</button>
+          </div>
+        </div>
+
+        {viewMode === 'leaders' ? (
+          <ul>
+            {Object.keys(leadingByPosition).map(pos => {
+              const lr = leadingByPosition[pos];
+              if (!lr) return null;
+              return (
+                <li key={pos}>{pos} — {lr.name} ({lr.course}): {lr.total}</li>
+              );
+            })}
+          </ul>
+        ) : (
+          <div>
+            {Object.keys(groupedResults).map(pos => (
+              <div key={pos} className="card" style={{ textAlign: 'left' }}>
+                <h4 style={{ marginTop: 0 }}>{pos}</h4>
+                <ul>
+                  {groupedResults[pos].map(r => (
+                    <li key={r.contestantId}>{r.name} ({r.course}) — {r.total}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
