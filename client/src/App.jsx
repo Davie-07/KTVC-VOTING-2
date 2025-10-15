@@ -40,9 +40,9 @@ function Home() {
         <p className="hero-subtitle">Secure, transparent, and modern student government elections</p>
       </div>
       
-      <div className="grid">
-        <div className="card">
-          <div className="card-icon">🗳️</div>
+      <div className="access-section">
+        <div className="access-item">
+          <div className="access-icon">🗳️</div>
           <h3>Students</h3>
           <p>Register and vote for your preferred candidates in a secure digital environment</p>
           <div className="row">
@@ -50,36 +50,31 @@ function Home() {
             <Link to="/student/login" className="btn btn-secondary">Login</Link>
           </div>
         </div>
-        <div className="card">
-          <div className="card-icon">⚙️</div>
+        <div className="access-item">
+          <div className="access-icon">⚙️</div>
           <h3>Administrators</h3>
           <p>Manage the voting process, upload candidates, and monitor live results</p>
           <Link to="/admin/login" className="btn btn-primary">Admin Login</Link>
         </div>
       </div>
       
-      <div className="features-section">
-        <h3>System Features</h3>
-        <div className="features-grid">
-          <div className="feature-item">
-            <span className="feature-icon">🔒</span>
-            <h4>Secure Voting</h4>
-            <p>JWT authentication and one-vote-per-position validation</p>
+      <div className="why-choose-section">
+        <h3>Why Choose This Way</h3>
+        <div className="benefits-grid">
+          <div className="benefit-item">
+            <i className="fas fa-bolt benefit-icon"></i>
+            <h4>Fast</h4>
+            <p>Quick and efficient voting process with instant results</p>
           </div>
-          <div className="feature-item">
-            <span className="feature-icon">📊</span>
-            <h4>Live Results</h4>
-            <p>Real-time vote counting with progress visualization</p>
+          <div className="benefit-item">
+            <i className="fas fa-eye benefit-icon"></i>
+            <h4>Transparent</h4>
+            <p>Open and verifiable voting with real-time progress tracking</p>
           </div>
-          <div className="feature-item">
-            <span className="feature-icon">📱</span>
-            <h4>Mobile Friendly</h4>
-            <p>Responsive design that works on all devices</p>
-          </div>
-          <div className="feature-item">
-            <span className="feature-icon">⏰</span>
-            <h4>Scheduled Voting</h4>
-            <p>Automated voting periods with start and end times</p>
+          <div className="benefit-item">
+            <i className="fas fa-clock benefit-icon"></i>
+            <h4>Timely</h4>
+            <p>Scheduled voting periods with automated start and end times</p>
           </div>
         </div>
       </div>
