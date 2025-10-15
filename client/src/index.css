@@ -698,26 +698,56 @@ h4 { font-size: var(--text-lg); }
   text-align: center;
 }
 
-/* Access Section (formerly grid cards) */
-.access-section {
+/* Home Container */
+.home-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(12px, 3vw, 16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Hero Content */
+.hero-content {
+  width: 100%;
+  margin-bottom: clamp(32px, 8vw, 48px);
+  padding: clamp(24px, 6vw, 32px) 0;
+}
+
+.hero-content h1 {
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: clamp(1rem, 3.5vw, 1.2rem);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Access Content */
+.access-content {
+  width: 100%;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: clamp(20px, 5vw, 32px);
-  margin: clamp(24px, 6vw, 48px) 0;
+  gap: clamp(24px, 6vw, 40px);
+  margin-bottom: clamp(40px, 10vw, 64px);
+  justify-items: center;
 }
 
-.access-item {
+.access-group {
   text-align: center;
-  padding: clamp(24px, 6vw, 32px);
-  background: var(--bg-secondary);
-  border-radius: clamp(12px, 3vw, 16px);
-  border: 1px solid var(--border);
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
-}
-
-.access-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px var(--shadow);
+  padding: clamp(20px, 5vw, 24px);
+  width: 100%;
+  max-width: 400px;
 }
 
 .access-icon {
@@ -726,46 +756,44 @@ h4 { font-size: var(--text-lg); }
   display: block;
 }
 
-.access-item h3 {
+.access-group h3 {
   margin-bottom: var(--space-3);
   color: var(--primary);
   font-size: var(--text-xl);
+  font-weight: 600;
 }
 
-.access-item p {
+.access-group p {
   color: var(--text-secondary);
   margin-bottom: var(--space-5);
   line-height: 1.6;
 }
 
-/* Why Choose Section */
-.why-choose-section {
-  margin-top: clamp(32px, 8vw, 64px);
+/* Benefits Content */
+.benefits-content {
+  width: 100%;
   text-align: center;
 }
 
-.why-choose-section h3 {
+.benefits-content h3 {
   margin-bottom: clamp(24px, 6vw, 40px);
   color: var(--text-primary);
   font-size: var(--text-2xl);
   font-weight: 600;
 }
 
-.benefits-grid {
+.benefits-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: clamp(20px, 5vw, 32px);
-  margin-top: var(--space-6);
+  justify-items: center;
 }
 
-.benefit-item {
+.benefit-group {
   text-align: center;
-  padding: clamp(20px, 5vw, 28px);
-  transition: transform var(--transition-base);
-}
-
-.benefit-item:hover {
-  transform: translateY(-2px);
+  padding: clamp(16px, 4vw, 20px);
+  width: 100%;
+  max-width: 300px;
 }
 
 .benefit-icon {
@@ -775,14 +803,14 @@ h4 { font-size: var(--text-lg); }
   display: block;
 }
 
-.benefit-item h4 {
+.benefit-group h4 {
   margin-bottom: var(--space-2);
   color: var(--text-primary);
   font-size: var(--text-lg);
   font-weight: 600;
 }
 
-.benefit-item p {
+.benefit-group p {
   color: var(--text-secondary);
   font-size: var(--text-sm);
   line-height: 1.5;
@@ -811,9 +839,20 @@ h4 { font-size: var(--text-lg); }
     padding: 12px 4px;
   }
   
-  .hero-section {
-    padding: clamp(24px, 8vw, 32px) clamp(4px, 2vw, 8px);
-    margin: -12px -4px clamp(16px, 5vw, 24px);
+  .home-container {
+    padding: 12px 4px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .access-content {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  
+  .benefits-list {
+    grid-template-columns: 1fr;
+    justify-items: center;
   }
   
   .cards {

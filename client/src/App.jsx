@@ -34,14 +34,14 @@ export default function App() {
 
 function Home() {
   return (
-    <div className="container">
-      <div className="hero-section">
+    <div className="home-container">
+      <div className="hero-content">
         <h1>Welcome to Kandara College Voting System</h1>
         <p className="hero-subtitle">Secure, transparent, and modern student government elections</p>
       </div>
       
-      <div className="access-section">
-        <div className="access-item">
+      <div className="access-content">
+        <div className="access-group">
           <div className="access-icon">🗳️</div>
           <h3>Students</h3>
           <p>Register and vote for your preferred candidates in a secure digital environment</p>
@@ -50,7 +50,7 @@ function Home() {
             <Link to="/student/login" className="btn btn-secondary">Login</Link>
           </div>
         </div>
-        <div className="access-item">
+        <div className="access-group">
           <div className="access-icon">⚙️</div>
           <h3>Administrators</h3>
           <p>Manage the voting process, upload candidates, and monitor live results</p>
@@ -58,20 +58,20 @@ function Home() {
         </div>
       </div>
       
-      <div className="why-choose-section">
+      <div className="benefits-content">
         <h3>Why Choose This Way</h3>
-        <div className="benefits-grid">
-          <div className="benefit-item">
+        <div className="benefits-list">
+          <div className="benefit-group">
             <i className="fas fa-bolt benefit-icon"></i>
             <h4>Fast</h4>
             <p>Quick and efficient voting process with instant results</p>
           </div>
-          <div className="benefit-item">
+          <div className="benefit-group">
             <i className="fas fa-eye benefit-icon"></i>
             <h4>Transparent</h4>
             <p>Open and verifiable voting with real-time progress tracking</p>
           </div>
-          <div className="benefit-item">
+          <div className="benefit-group">
             <i className="fas fa-clock benefit-icon"></i>
             <h4>Timely</h4>
             <p>Scheduled voting periods with automated start and end times</p>
