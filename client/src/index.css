@@ -284,6 +284,7 @@ button:disabled:hover, .btn:disabled:hover {
   gap: clamp(16px, 4vw, 20px); 
   max-width: min(480px, 95vw); 
   margin: 0 auto; 
+  width: 100%;
 }
 
 .form-group {
@@ -837,6 +838,8 @@ h4 { font-size: var(--text-lg); }
   
   .container {
     padding: 12px 4px;
+    width: 100%;
+    margin: 0;
   }
   
   .home-container {
@@ -853,6 +856,40 @@ h4 { font-size: var(--text-lg); }
   .benefits-list {
     grid-template-columns: 1fr;
     justify-items: center;
+  }
+  
+  /* Forms full width on mobile */
+  .form {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+  }
+  
+  .card {
+    margin: clamp(8px, 2vw, 12px) 0;
+    width: 100%;
+  }
+  
+  /* Dashboard sections full width */
+  .section {
+    width: 100%;
+    margin: 0 0 clamp(16px, 4vw, 24px) 0;
+  }
+  
+  .cards {
+    width: 100%;
+  }
+  
+  /* Progress bars and results full width */
+  .leaders-summary,
+  .detailed-results {
+    width: 100%;
+  }
+  
+  .leader-card,
+  .position-results {
+    width: 100%;
+    margin: 0 0 clamp(8px, 2vw, 12px) 0;
   }
   
   .cards {
@@ -901,6 +938,14 @@ h4 { font-size: var(--text-lg); }
 
 /* Medium mobile devices (481px - 640px) */
 @media (min-width: 481px) and (max-width: 640px) {
+  .container {
+    padding: clamp(12px, 3vw, 16px) clamp(8px, 2vw, 12px);
+  }
+  
+  .form {
+    max-width: min(450px, 90vw);
+  }
+  
   .cards {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
@@ -912,6 +957,14 @@ h4 { font-size: var(--text-lg); }
 
 /* Tablet devices (641px - 768px) */
 @media (min-width: 641px) and (max-width: 768px) {
+  .container {
+    padding: clamp(12px, 3vw, 16px) clamp(12px, 3vw, 20px);
+  }
+  
+  .form {
+    max-width: min(480px, 85vw);
+  }
+  
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }
