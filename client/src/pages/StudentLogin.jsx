@@ -39,7 +39,6 @@ export default function StudentLogin() {
       {msg && <p>{msg}</p>}
       {msg === 'success' && <div className="success">Success</div>}
       <form onSubmit={onSubmit} className="card form">
-        <h3 className="form-title">Student Login</h3>
         <input disabled={loading} type="number" placeholder="Admission Number (500-9999)" value={admissionNumber} onChange={e => setAdmissionNumber(e.target.value)} required />
         <input disabled={loading} type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
         <button type="submit" disabled={loading}>

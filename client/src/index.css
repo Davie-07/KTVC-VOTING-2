@@ -68,6 +68,23 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Prevent horizontal overflow */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+#root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 /* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -89,7 +106,9 @@
   z-index: 50;
   min-height: 48px;
   width: 100%;
+  max-width: 100vw;
   margin: 0;
+  overflow-x: hidden;
 }
 .nav a { 
   color: var(--primary); 
@@ -104,13 +123,17 @@
   width: 100%; 
   margin: 0 auto; 
   padding: clamp(12px, 3vw, 16px); 
-  max-width: 1200px;
+  max-width: min(1200px, 100vw);
+  overflow-x: hidden;
 }
 .row { 
   display: flex; 
   gap: var(--space-2); 
   align-items: center; 
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 .grid { 
   display: grid; 
@@ -824,22 +847,33 @@ h4 { font-size: var(--text-lg); }
   .nav {
     padding: 8px 4px;
     min-height: 56px;
+    width: 100vw;
+    max-width: 100vw;
   }
   
   .nav .header {
     width: 100%;
     justify-content: center;
     text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
   .title-orange {
-    font-size: clamp(12px, 4vw, 16px);
+    font-size: clamp(10px, 3.5vw, 14px);
+  }
+  
+  .logo-sm {
+    height: clamp(32px, 6vw, 40px);
   }
   
   .container {
     padding: 12px 4px;
-    width: 100%;
+    width: 100vw;
+    max-width: 100vw;
     margin: 0;
+    overflow-x: hidden;
   }
   
   .home-container {
@@ -863,11 +897,20 @@ h4 { font-size: var(--text-lg); }
     max-width: 100%;
     width: 100%;
     margin: 0;
+    overflow-x: hidden;
   }
   
   .card {
     margin: clamp(8px, 2vw, 12px) 0;
     width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  .form input, .form textarea, .form select, .form button {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   /* Dashboard sections full width */
